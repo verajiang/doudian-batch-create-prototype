@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>批量创建抖店商品｜交互原型</title>
+  <style>
+    :root{
+      --pink:#db1084;--pink-dark:#b9076c;--pink-soft:#fff0f7;--ink:#2f3440;--muted:#747b8c;
+      --line:#e6e8ef;--bg:#f6f7fb;--white:#fff;--green:#18a66a;--orange:#ee8a19;--red:#e54b4b;
+      --shadow:0 12px 36px rgba(30,36,50,.14);--radius:10px;
+    }
+    *{box-sizing:border-box}.hidden{display:none!important} body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg);font-size:14px}
+    button,input,select{font:inherit} button{cursor:pointer}.app{min-height:100vh}.topline{height:4px;background:linear-gradient(90deg,#ff6b7e 0 31%,#db1084 31% 58%,#e9ebf2 58%)}
+    .page{padding:26px 34px 60px}.panel{background:#fff;border-radius:8px;padding:24px;box-shadow:0 1px 0 rgba(0,0,0,.02)}
+    .filters{display:grid;grid-template-columns:repeat(4,minmax(190px,1fr));gap:18px 26px}.field{display:flex;align-items:center;gap:12px;min-width:0}.field label{font-size:16px;font-weight:600;white-space:nowrap}.input,.select{height:42px;border:1px solid #dcdfea;border-radius:6px;padding:0 14px;color:#9aa0ad;background:#fff;flex:1;min-width:0}.select{color:#505766}
+    .toolbar{display:flex;align-items:center;gap:12px;margin-top:22px;flex-wrap:wrap}.btn{height:42px;border:1px solid #d9dde8;border-radius:6px;background:#fff;color:#4e5563;padding:0 18px;font-weight:600}.btn:hover{border-color:var(--pink);color:var(--pink)}.btn.primary{background:var(--pink);border-color:var(--pink);color:#fff}.btn.primary:hover{background:var(--pink-dark)}.btn.soft{background:var(--pink-soft);border-color:#ff91c8;color:var(--pink)}.btn.ghost{border:0;color:var(--pink);background:transparent;padding:0 8px}.spacer{flex:1}
+    .menu-wrap{position:relative}.dropdown{position:absolute;right:0;top:48px;width:300px;background:#fff;border:1px solid #edf0f5;border-radius:8px;box-shadow:var(--shadow);padding:10px;z-index:10}.dropdown.hidden{display:none}.menu-title{font-size:12px;color:#9aa0ad;padding:8px 12px 5px}.menu-item{display:flex;align-items:center;gap:10px;padding:12px;border-radius:6px;font-size:16px;color:#454b58}.menu-item:hover{background:#faf0f6;color:var(--pink)}.menu-item.featured{background:#fff0f7;color:var(--pink);font-weight:700}.menu-item .tag{margin-left:auto;font-size:11px;color:#fff;background:var(--pink);border-radius:10px;padding:2px 7px}.divider{height:1px;background:#eee;margin:8px 10px}
+    .quick-actions{display:flex;gap:12px;margin:20px 0}.notice{display:flex;align-items:center;justify-content:space-between;background:#fff8f0;border:1px solid #ffd7ad;color:#594a3d;padding:16px 20px;border-radius:7px}.notice b{color:var(--orange)}
+    .selected-bar{margin-top:18px;background:#f8f8fa;padding:14px 18px;border-radius:7px;display:flex;gap:18px}.selected-bar a{color:var(--pink)}.tabs{display:flex;gap:32px;border-bottom:1px solid var(--line);margin-top:20px}.tab{padding:14px 0;font-size:16px;font-weight:600}.tab.active{color:var(--pink);border-bottom:3px solid var(--pink)}
+    table{border-collapse:collapse;width:100%}.list th,.list td{padding:18px 14px;border-bottom:1px solid #edf0f5;text-align:left}.list th{background:#fafbfc;font-size:15px}.product{display:flex;gap:14px;align-items:center}.thumb{width:70px;height:70px;background:linear-gradient(145deg,#f4f4f1,#dddfe3);border-radius:4px;position:relative}.thumb:before{content:"";position:absolute;width:30px;height:45px;background:#fff;left:20px;top:13px;border-radius:9px 9px 3px 3px;box-shadow:0 2px 5px #ccc}.product-name{font-size:16px;margin-bottom:5px}.meta{color:#999;line-height:1.55}.pink{color:var(--pink)}
+    .overlay{position:fixed;inset:0;background:rgba(24,29,41,.38);z-index:30;display:flex;justify-content:flex-end}.overlay.hidden{display:none}.drawer{width:min(1180px,94vw);height:100%;background:#fff;box-shadow:-10px 0 40px rgba(0,0,0,.16);display:flex;flex-direction:column}.drawer.config{width:min(760px,92vw)}
+    .drawer-head{height:72px;padding:0 26px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px}.drawer-head h2{font-size:20px;margin:0}.drawer-head .sub{color:#89909e}.close{margin-left:auto;width:34px;height:34px;border:0;background:#f4f5f8;border-radius:50%;font-size:20px;color:#6a7180}.drawer-body{overflow:auto;padding:24px 28px 100px;flex:1}.drawer-foot{height:72px;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:flex-end;gap:12px;padding:0 28px;background:#fff}
+    .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin:2px 0 28px}.step{position:relative;text-align:center;color:#a0a6b3}.step:after{content:"";height:2px;background:#e2e5eb;position:absolute;top:15px;left:56%;right:-44%}.step:last-child:after{display:none}.step .num{width:32px;height:32px;margin:0 auto 8px;border-radius:50%;display:grid;place-items:center;background:#e9ebf0;color:#7b8290;position:relative;z-index:1}.step.active,.step.done{color:var(--pink);font-weight:700}.step.active .num,.step.done .num{background:var(--pink);color:#fff}.step.done:after{background:#ff91c8}
+    .section-title{display:flex;align-items:center;justify-content:space-between;margin:22px 0 14px}.section-title h3{font-size:17px;margin:0}.hint{color:#8a919e;font-size:13px}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.form-item label{display:block;font-weight:600;margin-bottom:8px}.req{color:var(--red)}.form-control{width:100%;height:42px;border:1px solid #d9dde7;border-radius:6px;padding:0 12px;background:#fff}.card{border:1px solid var(--line);border-radius:9px;padding:18px;background:#fff}.status-card{display:flex;align-items:center;gap:14px;background:#f7fffb;border-color:#bde9d5}.status-icon{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#d9f7e9;color:var(--green);font-size:20px}.status-card b{display:block;margin-bottom:3px}.status-card .right{margin-left:auto}.badge{display:inline-flex;align-items:center;border-radius:13px;padding:4px 10px;font-size:12px;background:#eef1f5;color:#677080}.badge.ok{background:#e4f7ee;color:#168858}.badge.warn{background:#fff2dd;color:#ad6700}.badge.error{background:#ffe9e9;color:#c73737}
+    .template-card{display:grid;grid-template-columns:1fr auto;align-items:center;gap:18px;background:#fbfbfd}.template-card h4{margin:0 0 6px}.template-meta{color:#858c99}.upload{margin-top:18px;border:1px dashed #cdd2df;border-radius:10px;min-height:220px;display:grid;place-items:center;text-align:center;background:#fbfcfe}.upload .cloud{font-size:40px;color:#b8bdc9}.upload h3{margin:8px 0}.upload p{color:#9298a5}.file-card{display:flex;align-items:center;gap:14px;margin-top:16px}.file-icon{width:44px;height:48px;border-radius:6px;background:#eaf6ef;color:#11864f;display:grid;place-items:center;font-weight:700}.file-info{flex:1}.file-name{font-weight:700}.file-meta{color:#9298a5;font-size:13px;margin-top:4px}
+    .summary{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}.metric{padding:16px;border:1px solid var(--line);border-radius:9px}.metric .value{font-size:26px;font-weight:750;margin-top:6px}.metric.good .value{color:var(--green)}.metric.bad .value{color:var(--red)}.result-table th,.result-table td{padding:13px 12px;border-bottom:1px solid var(--line);vertical-align:top}.result-table th{background:#f7f8fb}.error-msg{color:#c33;max-width:310px}.check-row{display:flex;align-items:flex-start;gap:8px;padding:14px;background:#fff8f0;border:1px solid #ffd9ae;border-radius:7px;margin-top:18px}.correction-tip{display:flex;align-items:flex-start;gap:10px;padding:13px 15px;background:#f5f8ff;border:1px solid #d9e3ff;border-radius:7px;margin-bottom:14px;color:#566178}.fixed-row{background:#f8fffb}.progress{height:9px;background:#eee;border-radius:10px;overflow:hidden}.progress>div{height:100%;background:linear-gradient(90deg,#db1084,#ff73b9);width:68%;transition:width .5s}.task-head{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px}.task-id{font-size:20px;font-weight:700;margin:6px 0}.config-banner{background:#fff8f0;border:1px solid #ffd7aa;padding:14px;border-radius:8px;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+    .config-section{margin-bottom:24px}.config-section h3{margin:0 0 14px;font-size:17px}.radio-row{display:flex;gap:12px}.radio{border:1px solid #d9dde7;border-radius:7px;padding:10px 14px;min-width:130px}.radio.selected{border-color:var(--pink);background:var(--pink-soft);color:var(--pink)}.readonly{background:#f4f5f7;color:#8a909d}.footer-note{font-size:12px;color:#8e95a3;margin-right:auto}.prototype-note{position:fixed;left:18px;bottom:16px;background:#242936;color:#fff;padding:8px 12px;border-radius:6px;z-index:50;font-size:12px;opacity:.85}
+    @media(max-width:900px){.filters,.form-grid,.summary{grid-template-columns:1fr 1fr}.page{padding:18px}.quick-actions{overflow:auto}.drawer{width:100vw}.list th:nth-child(n+4),.list td:nth-child(n+4){display:none}} 
+  </style>
+  <style id="qianji-design-system-mapping">
+    /*
+      千机设计系统代码映射（规范快照：2026-07-16）
+      - 保留源命名：Color/Bule/*；代码别名 --qds-blue-* 仅为可读性映射。
+      - Color-Surface/Surface-Default 的源别名未解析，本原型明确回退 Color/Gray/Gray-1。
+      - Text-primary 源值为 Pink-6；中性正文使用已确认基础 token Color/Gray/Gray-9/6。
+    */
+    :root{
+      --qds-white:#fff;
+      --qds-pink-1:#fef2f8;--qds-pink-2:#fde4f1;--qds-pink-3:#fbc9e3;--qds-pink-4:#f8a9d0;--qds-pink-5:#ef6aa9;--qds-pink-6:#db1084;--qds-pink-7:#c20e75;--qds-pink-8:#a90c66;--qds-pink-9:#900a57;
+      --qds-gray-1:#fafafa;--qds-gray-2:#f5f5f5;--qds-gray-3:#e5e5e5;--qds-gray-4:#d4d4d4;--qds-gray-5:#a3a3a3;--qds-gray-6:#737373;--qds-gray-7:#525252;--qds-gray-8:#404040;--qds-gray-9:#262626;--qds-gray-10:#000;
+      --qds-red-1:#fff0f0;--qds-red-6:#ff2626;--qds-red-7:#e60000;
+      --qds-green-1:#f6ffed;--qds-green-2:#d9f7be;--qds-green-6:#52c41a;--qds-green-7:#389e0d;
+      --qds-yellow-1:#fff6e6;--qds-yellow-2:#ffe8bf;--qds-yellow-6:#ff9d0b;--qds-yellow-7:#e68e00;
+      --qds-bule-1:#eef2ff;--qds-bule-6:#2461fb;--qds-blue-1:var(--qds-bule-1);--qds-blue-6:var(--qds-bule-6);
+      --qds-pink-6-06:rgba(219,16,132,.06);--qds-pink-6-10:rgba(219,16,132,.10);--qds-black-04:rgba(0,0,0,.04);--qds-black-80:rgba(0,0,0,.8);
+      --qds-button-bg-default:var(--qds-pink-6);--qds-button-bg-hover:var(--qds-pink-4);--qds-button-bg-active:var(--qds-pink-8);--qds-button-bg-disabled:var(--qds-gray-3);
+      --qds-text-brand:var(--qds-pink-6);--qds-text-neutral-primary:var(--qds-gray-9);--qds-text-neutral-secondary:var(--qds-gray-6);
+      --qds-surface-white:var(--qds-white);--qds-surface-default:var(--qds-gray-1);
+      --qds-space-xxs:2px;--qds-space-xs:4px;--qds-space-s:5px;--qds-space-m:6px;--qds-space-l:8px;--qds-space-xl:12px;--qds-space-xxl:16px;--qds-space-xxxl:24px;
+      --qds-radius-xs:2px;--qds-radius-s:4px;--qds-radius-m:8px;--qds-radius-l:16px;--qds-radius-xl:20px;--qds-radius-xxl:32px;
+      --qds-shadow-popover:0 8px 24px rgba(38,38,38,.12);
+    }
+
+    body{color:var(--qds-text-neutral-primary);background:var(--qds-surface-default);font-size:14px;line-height:1.5}
+    .topline{height:3px;background:var(--qds-pink-6)}
+    .page{padding:var(--qds-space-xxxl) 32px 64px}.panel{border:1px solid var(--qds-gray-3);border-radius:var(--qds-radius-m);padding:var(--qds-space-xxxl);box-shadow:none}
+
+    /* 主按钮：大/小、主按钮/次按钮/线框/纯文本的代码映射 */
+    .btn{height:40px;padding:0 var(--qds-space-xxl);border:1px solid var(--qds-gray-4);border-radius:var(--qds-radius-s);background:var(--qds-white);color:var(--qds-gray-8);font-weight:500;line-height:38px;transition:background .16s,border-color .16s,color .16s,box-shadow .16s}
+    .btn:hover{border-color:var(--qds-pink-4);background:var(--qds-pink-1);color:var(--qds-pink-7)}
+    .btn:active{border-color:var(--qds-pink-8);background:var(--qds-pink-2);color:var(--qds-pink-8)}
+    .btn:focus-visible,.form-control:focus-visible,.input:focus-visible,.select:focus-visible{outline:0;box-shadow:0 0 0 3px var(--qds-pink-6-10)}
+    .btn:disabled{cursor:not-allowed;border-color:var(--qds-gray-3);background:var(--qds-button-bg-disabled);color:var(--qds-gray-6)}
+    .btn.primary{background:var(--qds-button-bg-default);border-color:var(--qds-button-bg-default);color:var(--qds-white)}
+    .btn.primary:hover{background:var(--qds-button-bg-hover);border-color:var(--qds-button-bg-hover);color:var(--qds-white)}
+    .btn.primary:active{background:var(--qds-button-bg-active);border-color:var(--qds-button-bg-active)}
+    .btn.soft{background:var(--qds-pink-1);border-color:var(--qds-pink-3);color:var(--qds-pink-7)}
+    .btn.ghost{height:32px;padding:0 var(--qds-space-l);border:0;background:transparent;color:var(--qds-text-brand);line-height:32px}
+    .btn.ghost:hover{background:var(--qds-pink-1);color:var(--qds-pink-7)}
+
+    /* 输入框 Input / 搜索框 / 单选选择器 */
+    .input,.select,.form-control{height:40px;border:1px solid var(--qds-gray-4);border-radius:var(--qds-radius-s);background:var(--qds-white);color:var(--qds-gray-8);padding:0 var(--qds-space-xl);transition:border-color .16s,box-shadow .16s}
+    .input:hover,.select:hover,.form-control:hover{border-color:var(--qds-pink-4)}
+    .input::placeholder,.form-control::placeholder{color:var(--qds-gray-5)}
+    .readonly{border-color:var(--qds-gray-3);background:var(--qds-gray-2);color:var(--qds-gray-6)}
+    .field label,.form-item label{color:var(--qds-gray-8);font-weight:500}.field label{font-size:14px}
+
+    /* popover / 子菜单 */
+    .dropdown{top:46px;width:292px;padding:var(--qds-space-l);border:1px solid var(--qds-gray-3);border-radius:var(--qds-radius-m);box-shadow:var(--qds-shadow-popover)}
+    .menu-title{padding:var(--qds-space-l) var(--qds-space-xl) var(--qds-space-xs);color:var(--qds-gray-5);font-size:12px}
+    .menu-item{min-height:40px;padding:var(--qds-space-l) var(--qds-space-xl);border-radius:var(--qds-radius-s);font-size:14px;color:var(--qds-gray-8)}
+    .menu-item:hover,.menu-item.featured{background:var(--qds-pink-1);color:var(--qds-pink-7)}.menu-item.featured{font-weight:500}.menu-item .tag{background:var(--qds-pink-6)}
+
+    /* tabs/text */
+    .tabs{gap:var(--qds-space-xxxl);border-bottom-color:var(--qds-gray-3)}.tab{padding:12px 2px;color:var(--qds-gray-6);font-size:14px;font-weight:500}.tab.active{color:var(--qds-pink-6);border-bottom:2px solid var(--qds-pink-6)}
+
+    /* 抽屉为业务页面容器；页面容器在规范中无可导入组件，保持自定义 */
+    .overlay{background:rgba(0,0,0,.36)}.drawer{width:min(1240px,96vw);box-shadow:-8px 0 24px rgba(38,38,38,.12)}.drawer.config{width:min(640px,94vw)}
+    .drawer-head{height:64px;padding:0 var(--qds-space-xxxl);border-bottom-color:var(--qds-gray-3);gap:var(--qds-space-xl)}
+    .drawer-head h2{font-size:20px;line-height:28px;font-weight:600;color:var(--qds-gray-9)}.drawer-head .sub{color:var(--qds-gray-6);font-size:13px}
+    .close{width:32px;height:32px;border-radius:var(--qds-radius-m);background:var(--qds-gray-2);color:var(--qds-gray-6);transition:background .16s,color .16s}.close:hover{background:var(--qds-pink-1);color:var(--qds-pink-6)}
+    .drawer-body{padding:var(--qds-space-xxxl) 32px 96px;background:var(--qds-white)}
+    .drawer-foot{height:64px;padding:0 var(--qds-space-xxxl);border-top-color:var(--qds-gray-3);box-shadow:0 -4px 12px var(--qds-black-04)}
+
+    /* 自定义步骤条：已读规范中未发现 stepper 组件集 */
+    .steps{max-width:760px;margin:4px auto 32px}.step{color:var(--qds-gray-5);font-size:13px;font-weight:400}.step:after{top:12px;height:1px;background:var(--qds-gray-3)}
+    .step .num{width:24px;height:24px;margin-bottom:var(--qds-space-l);border:1px solid var(--qds-gray-4);background:var(--qds-white);color:var(--qds-gray-6);font-size:12px}
+    .step.active,.step.done{color:var(--qds-pink-6);font-weight:500}.step.active .num,.step.done .num{border-color:var(--qds-pink-6);background:var(--qds-pink-6);color:var(--qds-white)}.step.done:after{background:var(--qds-pink-4)}
+
+    /* 标题 / 卡片 */
+    .section-title{margin:var(--qds-space-xxxl) 0 var(--qds-space-xl)}.section-title h3{font-size:16px;line-height:24px;font-weight:600;color:var(--qds-gray-9)}
+    .hint,.template-meta,.file-meta,.footer-note{color:var(--qds-gray-6)}
+    .card,.metric{border:1px solid var(--qds-gray-3);border-radius:var(--qds-radius-m);background:var(--qds-white);box-shadow:none}.card{padding:var(--qds-space-xxl)}
+    .status-card{background:var(--qds-green-1);border-color:var(--qds-green-2)}.status-icon{width:32px;height:32px;background:var(--qds-green-2);color:var(--qds-green-7);font-size:16px}
+    .summary{gap:var(--qds-space-xl);margin-bottom:var(--qds-space-xxxl)}.metric{min-height:96px;padding:var(--qds-space-xxl)}.metric .value{margin-top:var(--qds-space-xs);font-size:28px;line-height:36px;color:var(--qds-gray-9)}.metric.good .value{color:var(--qds-green-7)}.metric.bad .value{color:var(--qds-red-7)}
+    .summary.cross-category{grid-template-columns:repeat(5,1fr)}.policy-card{display:flex;align-items:center;gap:var(--qds-space-xl);margin-top:var(--qds-space-xl);background:var(--qds-yellow-1);border-color:var(--qds-yellow-2)}.policy-card .right{margin-left:auto}.policy-count{font-weight:600;color:var(--qds-gray-9)}
+    .policy-meta{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:var(--qds-space-xl);margin-bottom:var(--qds-space-xxxl)}.policy-meta .card{min-height:82px}.policy-meta b{display:block;margin-top:var(--qds-space-xs);font-size:16px}.property-name{font-weight:500;color:var(--qds-gray-9)}.property-sub{margin-top:2px;color:var(--qds-gray-5);font-size:11px}.truth-confirm{margin-top:var(--qds-space-xxl)}
+
+    /* upload-trigger / upload-file-list-item */
+    .template-card{background:var(--qds-gray-1)}.upload{min-height:208px;border:1px dashed var(--qds-gray-4);border-radius:var(--qds-radius-m);background:var(--qds-gray-1);transition:border-color .16s,background .16s}.upload:hover{border-color:var(--qds-pink-4);background:var(--qds-pink-6-06)}
+    .upload .cloud{font-size:32px;color:var(--qds-pink-5)}.upload h3{font-size:16px;font-weight:500}.upload p{color:var(--qds-gray-6)}
+    .file-card{padding:var(--qds-space-xl);border-radius:var(--qds-radius-s)}.file-icon{width:40px;height:40px;border-radius:var(--qds-radius-s);background:var(--qds-green-1);color:var(--qds-green-7);font-size:11px}
+
+    /* Header-cell / Body-cell */
+    table{font-size:13px}.result-table{border:1px solid var(--qds-gray-3);border-radius:var(--qds-radius-m);border-collapse:separate;border-spacing:0;overflow:hidden}
+    .result-table th,.result-table td{height:48px;padding:var(--qds-space-xl) var(--qds-space-xxl);border-bottom:1px solid var(--qds-gray-3);text-align:left}.result-table th{background:var(--qds-gray-1);color:var(--qds-gray-7);font-weight:500}.result-table tr:last-child td{border-bottom:0}.result-table tbody tr:hover td{background:var(--qds-pink-6-06)}
+    .list th,.list td{border-bottom-color:var(--qds-gray-3)}.list th{background:var(--qds-gray-1);font-size:13px;color:var(--qds-gray-7);font-weight:500}
+
+    /* 状态 status / Tag */
+    .badge{min-height:24px;padding:2px var(--qds-space-l);border-radius:var(--qds-radius-s);background:var(--qds-gray-2);color:var(--qds-gray-7);font-size:12px;line-height:20px}.badge.ok{background:var(--qds-green-1);color:var(--qds-green-7)}.badge.warn{background:var(--qds-yellow-1);color:var(--qds-yellow-7)}.badge.error{background:var(--qds-red-1);color:var(--qds-red-7)}
+    .error-msg{color:var(--qds-red-7)}.fixed-row td{background:var(--qds-green-1)}
+
+    /* Alert：信息 / 成功 / 警告 / 错误 */
+    .config-banner,.correction-tip,.check-row,.notice{border-radius:var(--qds-radius-s);padding:var(--qds-space-xl) var(--qds-space-xxl)}
+    .config-banner,.check-row,.notice{border-color:var(--qds-yellow-2);background:var(--qds-yellow-1);color:var(--qds-gray-8)}.correction-tip{border-color:var(--qds-bule-1);background:var(--qds-bule-1);color:var(--qds-gray-7)}
+
+    /* progress-line */
+    .progress{height:6px;background:var(--qds-gray-3)}.progress>div{background:var(--qds-pink-6)}
+    .task-id{color:var(--qds-gray-9);font-size:20px}.req{color:var(--qds-red-6)}
+    .prototype-note{left:16px;bottom:16px;border-radius:var(--qds-radius-s);background:var(--qds-black-80);font-size:12px}
+
+    @media(max-width:900px){.drawer-head .sub{display:none}.drawer-body{padding:20px 16px 88px}.steps{margin-bottom:24px}.summary,.summary.cross-category{grid-template-columns:1fr 1fr}.section-title{align-items:flex-start;gap:12px}.section-title>div{display:flex;flex-wrap:wrap;gap:6px}.filters,.form-grid,.policy-meta{grid-template-columns:1fr}.drawer-foot{padding:0 16px}.footer-note{display:none}.policy-card{align-items:flex-start;flex-wrap:wrap}.policy-card .right{margin-left:0;width:100%}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="topline"></div>
+  <div class="page">
+    <div class="panel">
+      <div class="filters">
+        <div class="field"><label>商品名称：</label><input class="input" placeholder="请输入" /></div>
+        <div class="field"><label>货号：</label><input class="input" placeholder="多个编号可用英文','隔开" /></div>
+        <div class="field"><label>抖音id：</label><input class="input" placeholder="多个编号可用英文','隔开" /></div>
+        <div class="field"><label>抖店商家编码：</label><input class="input" placeholder="多个编码可用英文','隔开" /></div>
+        <div class="field"><label>商品状态：</label><select class="select"><option>售卖中</option></select></div>
+        <div class="field"><label>销量排行：</label><select class="select"><option>请选择</option></select></div>
+        <div class="field"><label>商品评级：</label><select class="select"><option>请选择</option></select></div>
+      </div>
+      <div class="toolbar">
+        <button class="btn primary">搜索</button><button class="btn">清空</button>
+        <div class="menu-wrap">
+          <button class="btn" id="batchBtn">批量操作⌄</button>
+          <div class="dropdown" id="batchMenu">
+            <div class="menu-title">抖店商品创建</div>
+            <div class="menu-item featured" id="createEntry">＋ 批量创建抖店商品 <span class="tag">新增</span></div>
+            <div class="menu-item" id="taskEntry">◷ 批创任务记录</div>
+            <div class="divider"></div>
+            <div class="menu-title">现有批量能力</div>
+            <div class="menu-item">批量导入SPU上架</div><div class="menu-item">批量导入SKU上架</div><div class="menu-item">批量导入SKU下架</div>
+            <div class="menu-item">同步修改抖店商品信息 ›</div><div class="menu-item">导出 ›</div>
+          </div>
+        </div>
+        <button class="btn" id="configEntry">⚙ 抖店商品创建配置</button>
+        <button class="btn">抖店商品手动同步</button><div class="spacer"></div><button class="btn ghost">展开⌄</button>
+      </div>
+      <div class="quick-actions"><button class="btn">价格自动维护</button><button class="btn">设置红线价</button><button class="btn">其他平台商品对应</button><button class="btn soft">AI标题托管</button><button class="btn soft">AI托管设置</button></div>
+      <div class="notice"><span>●　今日待处理低效品 <b>0</b> 个，必须下架 <b>0</b> 个，建议下架 <b>0</b> 个</span><button class="btn primary">一键处理必须下架</button></div>
+      <div class="selected-bar">已选 0 件，批量操作：<a>上架</a><a>下架</a><a>修改商品标题</a><a>同步价格到抖店</a><a>修改库存</a></div>
+      <div class="tabs"><div class="tab active">全部商品</div><div class="tab">低效待下架</div><div class="tab">必须下架</div><div class="tab">高潜力新品</div></div>
+      <table class="list"><thead><tr><th><input type="checkbox" /></th><th>商品</th><th>DP留存图</th><th>当前库存</th><th>销量排行</th><th>操作</th></tr></thead><tbody>
+        <tr><td><input type="checkbox" /></td><td><div class="product"><div class="thumb"></div><div><div class="product-name">MLB官方 TWS同款简约运动纯色小...</div><div class="meta">ID:3831317613661782039<br/>货号：3ATSB0264　共3个颜色分类,6个尺码大小</div></div></div></td><td><div class="thumb"></div></td><td>--</td><td><span class="pink">0条</span></td><td><span class="pink">编辑　查看商品日志<br/>修改价格　修改库存</span></td></tr>
+        <tr><td><input type="checkbox" /></td><td><div class="product"><div class="thumb"></div><div><div class="product-name">MLB官方 男女同款简约舒适纯色小...</div><div class="meta">ID:3831317416107725897<br/>货号：3ATSB0164　共3个颜色分类,6个尺码大小</div></div></div></td><td><div class="thumb"></div></td><td>--</td><td><span class="pink">0条</span></td><td><span class="pink">编辑　查看商品日志<br/>修改价格　修改库存</span></td></tr>
+      </tbody></table>
+    </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="wizardOverlay">
+  <div class="drawer">
+    <div class="drawer-head"><h2>批量创建抖店商品</h2><span class="sub">当前店铺：抖店旗舰店 · 一个文件可包含多个叶子类目</span><button class="btn ghost" id="inlineConfig">管理店铺商品创建配置</button><button class="close" data-close="wizard">×</button></div>
+    <div class="drawer-body">
+      <div class="steps" id="steps">
+        <div class="step active"><div class="num">1</div>选择范围</div><div class="step"><div class="num">2</div>上传文件</div><div class="step"><div class="num">3</div>校验并创建</div>
+      </div>
+      <section class="wizard-page" data-page="1">
+        <div class="section-title"><h3>确认跨类目创建规则</h3><span class="hint">店铺自动确定；每个商品通过固定列 category_leaf_id 指定叶子类目</span></div>
+        <div class="form-grid">
+          <div class="form-item"><label>当前抖店店铺</label><input class="form-control readonly" value="抖店旗舰店｜由当前后台自动带入" readonly/></div>
+          <div class="form-item"><label>类目识别方式</label><input class="form-control readonly" value="按商品信息 Sheet 的 category_leaf_id 自动分组" readonly/></div>
+        </div>
+        <div class="section-title"><h3>创建前置检查</h3></div>
+        <div class="card status-card"><div class="status-icon">✓</div><div><b>店铺商品创建配置有效</b><span class="hint">授权、客服电话、运费、库存策略、发货时效均已验证</span></div><div class="right"><span class="badge ok">配置有效</span> <button class="btn ghost" id="editConfigInStep">查看配置</button></div></div>
+        <div class="card policy-card"><div><b>类目默认属性方案</b><div class="hint">已维护 18 个叶子类目，其中 17 个方案有效，1 个待补充；未配置完整的类目商品会在校验时拦截。</div></div><div class="right"><span class="badge warn">1 个待补充</span> <button class="btn ghost open-category-policy">管理默认方案</button></div></div>
+        <div class="section-title"><h3>固定模板规则</h3></div>
+        <div class="card"><table class="result-table"><tr><td>模板范围</td><td>当前店铺 / 支持多个已配置叶子类目</td></tr><tr><td>类目标识</td><td>用户填写固定列 <code>category_leaf_id</code>；系统按类目分组校验</td></tr><tr><td>类目必填属性</td><td>不在 Excel 展开；系统按类目默认属性方案生成 <code>product_format_new</code></td></tr><tr><td>销售规格</td><td>固定列“规格组合”，例如：颜色=黑色|尺码=M；系统转换为 <code>sell_properties</code></td></tr></table></div>
+      </section>
+      <section class="wizard-page hidden" data-page="2">
+        <div class="section-title"><h3>下载并填写跨类目固定模板</h3><span class="hint">含导入说明、商品信息、SKU信息、类目字典四个 Sheet；业务表头不随类目改变</span></div>
+        <div class="card template-card"><div><h4>抖店商品跨类目批量创建模板.xlsx</h4><div class="template-meta">固定模板 V20260717 · 类目列使用字典下拉 · 类目属性由系统默认方案注入</div></div><button class="btn" data-demo-download>↓ 下载固定模板</button></div>
+        <div class="upload" id="uploadZone"><div><div class="cloud">☁</div><h3>拖拽 Excel 到此处，或点击选择文件</h3><p>仅支持当前店铺下载的跨类目固定模板；系统校验真实文件格式、模板版本和每行 category_leaf_id</p><button class="btn primary" id="simulateUpload">选择示例文件</button></div></div>
+        <div class="card file-card hidden" id="fileCard"><div class="file-icon">XLSX</div><div class="file-info"><div class="file-name">夏季新品_跨类目批量创建_0717.xlsx</div><div class="file-meta">商品 12 个 · SKU 48 个 · 涉及 3 个叶子类目 · 固定模板版本匹配</div></div><span class="badge ok">已解析</span><button class="btn ghost" id="removeFile">移除</button></div>
+      </section>
+      <section class="wizard-page hidden" data-page="3">
+        <div class="summary cross-category"><div class="metric"><div class="hint">商品总数</div><div class="value">12</div></div><div class="metric"><div class="hint">SKU 总数</div><div class="value">48</div></div><div class="metric"><div class="hint">涉及类目</div><div class="value">3</div></div><div class="metric good"><div class="hint">可创建商品</div><div class="value" id="validCount">10</div></div><div class="metric bad"><div class="hint">异常商品</div><div class="value" id="invalidCount">2</div></div></div>
+        <div class="correction-tip"><b>系统处理：</b><span>系统已按 3 个叶子类目分组，并注入各自默认属性。Excel 数据错误可在线修正或上传修正表；类目方案缺失需进入“默认属性方案”补齐。</span></div>
+        <div class="section-title"><h3>校验结果</h3><div><button class="btn" data-demo-download>下载全部校验结果</button> <button class="btn" id="downloadCorrection">下载异常修正表</button> <button class="btn primary" id="uploadCorrection">上传修正文件</button></div></div>
+        <table class="result-table"><thead><tr><th>导入商品编号</th><th>叶子类目</th><th>商品标题</th><th>SKU</th><th>结果</th><th>错误定位</th><th>操作</th></tr></thead><tbody>
+          <tr><td>ERP-P-1001</td><td>短袖T恤<br/><span class="hint">200001</span></td><td>夏季纯棉圆领短袖T恤</td><td>4</td><td><span class="badge ok">通过</span></td><td>已注入 4 项默认属性</td><td>—</td></tr>
+          <tr id="errorRowCode"><td>ERP-P-1002</td><td>套头卫衣<br/><span class="hint">200002</span></td><td>宽松字母印花卫衣</td><td>6</td><td class="result-status"><span class="badge error">异常</span></td><td class="error-msg">SKU信息!第8行：商家编码 <code>spec_prices_v2[].code</code> 重复</td><td class="result-action"><button class="btn ghost edit-error" data-error="code">在线修正</button></td></tr>
+          <tr id="errorRowCategory"><td>ERP-P-1003</td><td>运动鞋<br/><span class="hint">200003</span></td><td>轻量缓震运动鞋</td><td>3</td><td class="result-status"><span class="badge error">异常</span></td><td class="error-msg">类目默认方案缺少必填属性“鞋面材质”，无法生成 <code>product_format_new</code></td><td class="result-action"><button class="btn ghost open-category-policy">配置类目方案</button></td></tr>
+          <tr><td>ERP-P-1004</td><td>短袖T恤<br/><span class="hint">200001</span></td><td>复古水洗短袖T恤</td><td>5</td><td><span class="badge ok">通过</span></td><td>已注入 4 项默认属性</td><td>—</td></tr>
+        </tbody></table>
+        <label class="check-row" id="partialRow"><input type="checkbox" id="partialCheck"/><span><b id="partialLabel">仅创建 10 个校验通过商品的草稿</b><br/><span class="hint">未勾选时，存在异常商品将无法创建本次草稿任务；异常商品不会被自动修复。</span></span></label>
+      </section>
+    </div>
+    <div class="drawer-foot"><span class="footer-note" id="footNote">配置和类目规则校验通过后才能继续</span><button class="btn" id="prevBtn">取消</button><button class="btn primary" id="nextBtn">下一步：上传文件</button></div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="correctionOverlay">
+  <div class="drawer config">
+    <div class="drawer-head"><h2>在线修正异常商品</h2><span class="sub" id="correctionProduct">—</span><button class="close" data-close="correction">×</button></div>
+    <div class="drawer-body">
+      <div class="config-banner">ⓘ　保存后只更新本次尚未确认创建的导入草稿，并重新校验该商品及其全部 SKU。</div>
+      <div class="card" style="margin-bottom:18px"><div class="hint">错误定位</div><div id="correctionLocation" style="margin-top:6px;font-weight:700">—</div></div>
+      <div class="form-item"><label id="correctionLabel"><span class="req">*</span> 修正值</label><div id="correctionControl"></div><div class="hint" style="margin-top:8px">请求字段：<code id="correctionField">—</code></div></div>
+    </div>
+    <div class="drawer-foot"><span class="footer-note">修正仅在确认创建草稿前有效</span><button class="btn" data-close="correction">取消</button><button class="btn primary" id="saveCorrection">保存并重新校验</button></div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="taskOverlay">
+  <div class="drawer">
+    <div class="drawer-head"><h2>批创任务记录</h2><span class="sub">当前店铺：抖店旗舰店</span><button class="close" data-close="task">×</button></div>
+    <div class="drawer-body">
+      <div class="summary"><div class="metric"><div class="hint">全部任务</div><div class="value">38</div></div><div class="metric"><div class="hint">创建中</div><div class="value">2</div></div><div class="metric good"><div class="hint">全部成功</div><div class="value">31</div></div><div class="metric bad"><div class="hint">部分成功/失败</div><div class="value">5</div></div></div>
+      <div class="section-title"><h3>任务列表</h3><button class="btn primary" id="createFromTaskList">＋ 批量创建商品</button></div>
+      <div class="form-grid" style="grid-template-columns:1.2fr 1fr 1fr 1fr auto;margin-bottom:18px">
+        <div class="form-item"><label>任务编号</label><input class="form-control" placeholder="请输入任务编号"/></div>
+        <div class="form-item"><label>包含类目</label><select class="form-control"><option>全部类目</option><option>短袖T恤</option><option>套头卫衣</option><option>运动鞋</option></select></div>
+        <div class="form-item"><label>任务状态</label><select class="form-control"><option>全部状态</option><option>创建中</option><option>全部成功</option><option>部分成功</option><option>全部失败</option></select></div>
+        <div class="form-item"><label>创建时间</label><input class="form-control" value="近30天"/></div>
+        <div class="form-item"><label>&nbsp;</label><button class="btn primary">查询</button></div>
+      </div>
+      <table class="result-table"><thead><tr><th>任务编号 / 文件</th><th>类目范围</th><th>商品 / SKU</th><th>处理结果</th><th>任务状态</th><th>创建人 / 时间</th><th>操作</th></tr></thead><tbody>
+        <tr><td><b>DDC-20260717-00038</b><br/><span class="hint">夏季新品_跨类目批量创建_0717.xlsx</span></td><td>3 个叶子类目<br/><span class="hint">短袖T恤等</span></td><td>10 / 42</td><td>草稿成功9 · 失败1</td><td><span class="badge warn">部分成功</span></td><td>小福<br/><span class="hint">07-17 10:52</span></td><td><button class="btn ghost view-task-detail">查看详情</button></td></tr>
+        <tr><td><b>DDC-20260715-00037</b><br/><span class="hint">卫衣_新品批量.xlsx</span></td><td>套头卫衣</td><td>26 / 104</td><td>草稿成功26</td><td><span class="badge ok">全部成功</span></td><td>小福<br/><span class="hint">07-15 16:20</span></td><td><button class="btn ghost view-task-detail">查看详情</button></td></tr>
+        <tr><td><b>DDC-20260715-00036</b><br/><span class="hint">短袖补货款.xlsx</span></td><td>短袖T恤</td><td>12 / 48</td><td>草稿成功0 · 失败12</td><td><span class="badge error">全部失败</span></td><td>运营A<br/><span class="hint">07-15 11:08</span></td><td><button class="btn ghost view-task-detail">查看详情</button></td></tr>
+        <tr><td><b>DDC-20260714-00035</b><br/><span class="hint">夏季针织衫.xlsx</span></td><td>针织衫</td><td>18 / 72</td><td>草稿成功16 · 失败2</td><td><span class="badge warn">部分成功</span></td><td>运营B<br/><span class="hint">07-14 09:35</span></td><td><button class="btn ghost view-task-detail">查看详情</button></td></tr>
+      </tbody></table>
+    </div>
+    <div class="drawer-foot"><span class="footer-note">任务列表仅展示当前店铺的数据</span><button class="btn" data-close="task">关闭</button></div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="detailOverlay">
+  <div class="drawer">
+    <div class="drawer-head"><h2>批创任务详情</h2><span class="sub">当前店铺：抖店旗舰店 · DDC-20260717-00038 · 3 个叶子类目</span><button class="btn ghost" id="refreshTask">刷新状态</button><button class="close" data-close="detail">×</button></div>
+    <div class="drawer-body">
+      <div class="task-head"><div class="card"><div class="hint">批创任务编号</div><div class="task-id">DDC-20260717-00038</div><span class="badge warn">部分成功</span> <span class="badge">3 个叶子类目</span></div><div class="card"><div class="hint">整体进度</div><div class="task-id">10 / 10</div><div class="progress"><div id="progressBar" style="width:100%"></div></div></div></div>
+      <div class="summary"><div class="metric"><div class="hint">待创建</div><div class="value">0</div></div><div class="metric"><div class="hint">创建中</div><div class="value">0</div></div><div class="metric good"><div class="hint">已存草稿</div><div class="value">9</div></div><div class="metric bad"><div class="hint">创建失败</div><div class="value">1</div></div></div>
+      <div class="section-title"><h3>商品结果明细</h3><button class="btn" data-demo-download>导出任务结果</button></div>
+      <table class="result-table"><thead><tr><th>导入商品编号</th><th>叶子类目</th><th>平台商品ID</th><th>状态</th><th>说明</th><th>操作</th></tr></thead><tbody>
+        <tr><td>ERP-P-1001</td><td>短袖T恤</td><td>3724250815662260700</td><td><span class="badge ok">已存草稿</span></td><td>已按短袖T恤默认方案注入属性</td><td><button class="btn ghost" id="viewProduct">查看草稿</button></td></tr>
+        <tr><td>ERP-P-1004</td><td>套头卫衣</td><td>3724250815662260812</td><td><span class="badge ok">已存草稿</span></td><td>已按套头卫衣默认方案注入属性</td><td><button class="btn ghost">查看草稿</button></td></tr>
+        <tr><td>ERP-P-1008</td><td>运动鞋</td><td>—</td><td><span class="badge error">创建失败</span></td><td class="error-msg">平台类目规则已更新，默认属性方案需重新验证</td><td><button class="btn ghost open-category-policy">修复类目方案</button></td></tr>
+      </tbody></table>
+    </div>
+    <div class="drawer-foot"><span class="footer-note">任务已结束：成功商品仅保存至抖店草稿箱，未提交审核、未上架</span><button class="btn" id="backTaskList">查看任务列表</button><button class="btn primary" id="backProductList">返回商品列表</button></div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="configOverlay">
+  <div class="drawer config">
+    <div class="drawer-head"><h2>抖店商品创建配置</h2><span class="sub">按店铺独立保存</span><button class="close" data-close="config">×</button></div>
+    <div class="drawer-body">
+      <div class="config-banner">ⓘ　店铺配置是创建商品草稿的默认值，提交任务时仍会按当前类目规则进行二次校验。</div>
+      <div class="config-section"><h3>店铺与授权</h3><div class="form-grid"><div class="form-item"><label>当前抖店店铺</label><input class="form-control readonly" value="抖店旗舰店｜由当前后台自动带入" readonly/></div><div class="form-item"><label>授权状态</label><input class="form-control readonly" value="已授权 · 商品创建接口权限正常" readonly/></div></div></div>
+      <div class="config-section"><h3>履约与客服</h3><div class="form-grid"><div class="form-item"><label><span class="req">*</span> 客服电话 <span class="hint">mobile</span></label><input class="form-control" value="400-800-8899"/></div><div class="form-item"><label><span class="req">*</span> 默认运费模板 <span class="hint">freight_id</span></label><select class="form-control"><option>全国包邮（ID: 0）</option></select></div><div class="form-item"><label><span class="req">*</span> 默认发货时效 <span class="hint">delivery_delay_day</span></label><select class="form-control"><option>48小时内发货</option></select></div></div></div>
+      <div class="config-section"><h3>交易与库存</h3><div class="form-grid"><div class="form-item"><label>支付方式 <span class="hint">pay_type</span></label><div class="radio-row"><div class="radio selected">在线支付（1）</div><div class="radio">货到付款（0）</div></div></div><div class="form-item"><label><span class="req">*</span> 库存扣减方式 <span class="hint">reduce_type</span></label><div class="radio-row"><div class="radio selected">拍下减库存（1）</div><div class="radio">付款减库存（2）</div></div></div></div></div>
+      <div class="config-section"><h3>创建策略（首版固定）</h3><div class="form-grid"><div class="form-item"><label>商品类型 <span class="hint">product_type</span></label><input class="form-control readonly" value="普通实物商品（0）" readonly/></div><div class="form-item"><label>发货模式 <span class="hint">presell_type</span></label><input class="form-control readonly" value="现货（0）" readonly/></div><div class="form-item"><label>提交方式 <span class="hint">commit</span></label><input class="form-control readonly" value="仅保存至草稿箱（false）" readonly/></div><div class="form-item"><label>后续动作</label><input class="form-control readonly" value="不提审、不上架" readonly/></div></div></div>
+      <div class="config-section"><h3>品牌与售后</h3><div class="form-grid"><div class="form-item"><label>无品牌处理策略 <span class="hint">standard_brand_id</span></label><select class="form-control"><option>仅在类目允许时使用“无品牌”</option></select></div><div class="form-item"><label>默认售后策略 <span class="hint">after_sale_service_v2</span></label><select class="form-control"><option>按类目默认政策</option></select></div></div></div>
+      <div class="config-section"><h3>类目默认属性方案</h3><div class="card policy-card"><div><div class="policy-count">18 个类目方案</div><div class="hint">17 个有效 · 1 个待补充；按类目生成 product_format_new</div></div><div class="right"><button class="btn ghost open-category-policy">管理默认方案</button></div></div></div>
+    </div>
+    <div class="drawer-foot"><span class="footer-note">上次验证：2026-07-16 10:42　配置有效</span><button class="btn" data-close="config">取消</button><button class="btn primary" id="saveConfig">保存并验证配置</button></div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="categoryPolicyOverlay">
+  <div class="drawer">
+    <div class="drawer-head"><h2>类目默认属性方案</h2><span class="sub">当前店铺：抖店旗舰店 · 用户无需在 Excel 填写类目动态属性</span><button class="close" data-close="category-policy">×</button></div>
+    <div class="drawer-body">
+      <div class="config-banner">ⓘ　默认值按叶子类目独立维护。系统只对方案完整且规则版本有效的类目创建草稿；资质、材质成分等不能安全统一的字段不得自动猜测。</div>
+      <div class="summary"><div class="metric"><div class="hint">已维护类目</div><div class="value">18</div></div><div class="metric good"><div class="hint">方案有效</div><div class="value" id="validPolicyCount">17</div></div><div class="metric bad"><div class="hint">待补充</div><div class="value" id="invalidPolicyCount">1</div></div><div class="metric"><div class="hint">最近同步</div><div class="value" style="font-size:18px">07-17 09:30</div></div></div>
+      <div class="section-title"><h3>默认方案列表</h3><div><button class="btn">同步平台类目规则</button> <button class="btn primary">新增类目方案</button></div></div>
+      <table class="result-table"><thead><tr><th>叶子类目</th><th>类目ID</th><th>平台必填属性</th><th>默认值示例</th><th>规则版本</th><th>状态</th><th>操作</th></tr></thead><tbody>
+        <tr><td>短袖T恤</td><td>200001</td><td>4 / 4 已配置</td><td>适用季节=夏季；袖长=短袖…</td><td>2026-07-17</td><td><span class="badge ok">有效</span></td><td><button class="btn ghost edit-policy" data-category="tshirt">编辑</button></td></tr>
+        <tr><td>套头卫衣</td><td>200002</td><td>4 / 4 已配置</td><td>衣门襟=套头；厚薄=常规…</td><td>2026-07-17</td><td><span class="badge ok">有效</span></td><td><button class="btn ghost edit-policy" data-category="hoodie">编辑</button></td></tr>
+        <tr id="policyRowShoes"><td>运动鞋</td><td>200003</td><td id="shoePolicyProgress">5 / 6 已配置</td><td id="shoePolicyExample">鞋面材质待配置</td><td>2026-07-17</td><td id="shoePolicyStatus"><span class="badge error">待补充</span></td><td id="shoePolicyAction"><button class="btn ghost edit-policy" data-category="shoes">补充配置</button></td></tr>
+      </tbody></table>
+      <div class="section-title"><h3>默认规则边界</h3></div>
+      <div class="card"><table class="result-table"><tr><td>允许默认</td><td>业务确认可按类目统一的枚举或固定值，并保存平台 property_id / value_id</td></tr><tr><td>禁止猜测</td><td>资质附件、真实材质成分、生产日期等随商品变化或涉及合规的字段</td></tr><tr><td>规则失效</td><td>平台必填项或枚举发生变化时，方案转为“待重新验证”，相关类目商品暂停创建</td></tr></table></div>
+    </div>
+    <div class="drawer-foot"><span class="footer-note">配置变更会记录操作人、时间、平台规则版本和变更前后值</span><button class="btn" data-close="category-policy">关闭</button></div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="policyEditorOverlay">
+  <div class="drawer">
+    <div class="drawer-head"><h2 id="policyEditorTitle">编辑默认属性方案</h2><span class="sub" id="policyEditorSubtitle">—</span><button class="close" data-close="policy-editor">×</button></div>
+    <div class="drawer-body">
+      <div class="correction-tip"><b>配置说明：</b><span>属性清单和可选值来自平台当前类目规则。这里只配置后续新任务的默认值，不修改已创建草稿，也不覆盖已生成任务的方案快照。</span></div>
+      <div class="policy-meta">
+        <div class="card"><span class="hint">叶子类目</span><b id="policyCategoryPath">—</b><span class="hint" id="policyCategoryId">—</span></div>
+        <div class="card"><span class="hint">平台规则版本</span><b id="policyRuleVersion">2026-07-17</b><span class="hint">最近同步：07-17 09:30</span></div>
+        <div class="card"><span class="hint">当前方案状态</span><b id="policyEditorStatus"><span class="badge error">待补充</span></b><span class="hint" id="policyConfiguredCount">5 / 6 已配置</span></div>
+      </div>
+      <div class="section-title"><h3>平台必填属性与默认值</h3><span class="hint">正式属性、枚举及 property_id 以实时接口返回为准</span></div>
+      <table class="result-table"><thead><tr><th>平台必填属性</th><th>属性类型</th><th>默认策略</th><th>默认值</th><th>状态</th></tr></thead><tbody id="policyEditorBody"></tbody></table>
+      <div class="config-banner" style="margin-top:16px">如某项会随商品变化，默认策略应选择“不支持默认”。此时该类目不能使用无动态属性的固定模板创建，系统不会用空值或猜测值绕过。</div>
+      <label class="check-row truth-confirm"><input type="checkbox" id="policyTruthConfirm"/><span><b>我确认上述默认值适用于当前店铺后续导入的此类目商品</b><br/><span class="hint">确认人和变更内容将进入审计日志；平台规则变化后需要重新验证。</span></span></label>
+    </div>
+    <div class="drawer-foot"><span class="footer-note">验证内容：必填完整性、平台枚举有效性、属性依赖和规则版本；不会创建测试商品</span><button class="btn" data-close="policy-editor">取消</button><button class="btn primary" id="savePolicyEditor">保存并验证方案</button></div>
+  </div>
+</div>
+<div class="prototype-note">交互原型：点击“批量创建抖店商品”或“抖店商品创建配置”体验流程</div>
+<script>
+  const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+  const menu=$('#batchMenu'), wizard=$('#wizardOverlay'), correction=$('#correctionOverlay'), task=$('#taskOverlay'), detail=$('#detailOverlay'), config=$('#configOverlay'), categoryPolicy=$('#categoryPolicyOverlay'), policyEditor=$('#policyEditorOverlay'); let page=1, uploaded=false, detailSource='product', activeError='', invalidCount=2, categoryPolicySource='wizard', activePolicyKey='shoes';
+  $('#batchBtn').onclick=()=>menu.classList.toggle('hidden');
+  document.addEventListener('click',e=>{if(!e.target.closest('.menu-wrap')) menu.classList.add('hidden')});
+  function openWizard(){wizard.classList.remove('hidden');menu.classList.add('hidden');showPage(1)}
+  function openTaskList(){task.classList.remove('hidden');menu.classList.add('hidden')}
+  function openDetail(source='product'){detailSource=source;detail.classList.remove('hidden')}
+  function openConfig(){config.classList.remove('hidden')}
+  function openCategoryPolicy(trigger){categoryPolicySource=trigger?.closest('#errorRowCategory')?'validation':trigger?.closest('#detailOverlay')?'detail':trigger?.closest('#configOverlay')?'config':'wizard';categoryPolicy.classList.remove('hidden')}
+  $('#createEntry').onclick=openWizard; $('#configEntry').onclick=openConfig; $('#inlineConfig').onclick=openConfig; $('#editConfigInStep').onclick=openConfig;
+  $$('.open-category-policy').forEach(x=>x.onclick=()=>openCategoryPolicy(x));
+  function closeWizard(){if(page>1||uploaded){if(!confirm('退出后本次未创建内容不会保留，确认退出吗？'))return}wizard.classList.add('hidden')}
+  $$('[data-close="wizard"]').forEach(x=>x.onclick=closeWizard);
+  $$('[data-close="task"]').forEach(x=>x.onclick=()=>task.classList.add('hidden'));
+  $$('[data-close="detail"]').forEach(x=>x.onclick=()=>{detail.classList.add('hidden');if(detailSource==='task')task.classList.remove('hidden')});
+  $$('[data-close="config"]').forEach(x=>x.onclick=()=>config.classList.add('hidden'));
+  $$('[data-close="correction"]').forEach(x=>x.onclick=()=>correction.classList.add('hidden'));
+  $$('[data-close="category-policy"]').forEach(x=>x.onclick=()=>categoryPolicy.classList.add('hidden'));
+  $$('[data-close="policy-editor"]').forEach(x=>x.onclick=()=>policyEditor.classList.add('hidden'));
+  $('#saveConfig').onclick=()=>{config.classList.add('hidden');alert('配置已保存并通过平台有效性校验')};
+  $('#simulateUpload').onclick=()=>{uploaded=true;$('#uploadZone').classList.add('hidden');$('#fileCard').classList.remove('hidden');updateButtons()};
+  $('#removeFile').onclick=()=>{uploaded=false;$('#fileCard').classList.add('hidden');$('#uploadZone').classList.remove('hidden');updateButtons()};
+  function showPage(n){page=n;$$('.wizard-page').forEach(x=>x.classList.toggle('hidden',+x.dataset.page!==n));$$('.step').forEach((x,i)=>{x.classList.toggle('active',i===n-1);x.classList.toggle('done',i<n-1)});$('.drawer-body').scrollTop=0;updateButtons()}
+  function updateButtons(){const prev=$('#prevBtn'),next=$('#nextBtn'),note=$('#footNote');prev.textContent=page===1?'取消':'上一步';if(page===1){next.textContent='下一步：上传文件';note.textContent='未配置完整的类目会在上传校验时按商品拦截'}if(page===2){next.textContent='开始校验';next.disabled=!uploaded;note.textContent=uploaded?'文件已解析，可按 category_leaf_id 分组校验':'请先上传当前店铺的跨类目固定模板'}if(page===3){next.textContent=`确认创建 ${12-invalidCount} 个草稿`;next.disabled=false;note.textContent=invalidCount?'Excel错误与类目默认方案需分别修正；创建后不能返回修改':'全部商品校验通过，可确认创建至草稿箱'}}
+  $('#prevBtn').onclick=()=>{if(page===1)closeWizard();else showPage(page-1)};
+  $('#nextBtn').onclick=()=>{if(page===2&&!uploaded)return;if(page===3&&invalidCount&&!$('#partialCheck').checked){alert(`当前有 ${invalidCount} 个异常商品。请先修正，或勾选“仅创建校验通过商品的草稿”。`);return}if(page===3){wizard.classList.add('hidden');openDetail('product');return}showPage(page+1)};
+  function refreshValidation(){const valid=12-invalidCount;$('#validCount').textContent=valid;$('#invalidCount').textContent=invalidCount;$('#partialLabel').textContent=`仅创建 ${valid} 个校验通过商品的草稿`;$('#partialRow').classList.toggle('hidden',invalidCount===0);updateButtons()}
+  function markFixed(type){const row=$(type==='code'?'#errorRowCode':'#errorRowCategory');if(!row||row.dataset.fixed)return;row.dataset.fixed='1';row.classList.add('fixed-row');row.querySelector('.result-status').innerHTML='<span class="badge ok">复检通过</span>';row.querySelector('.error-msg').textContent=type==='category'?'类目默认方案已补齐并重新验证，系统成功注入必填属性':'修正已保存，商品及其全部 SKU 复检通过';row.querySelector('.result-action').textContent='—';invalidCount--;refreshValidation()}
+  $$('.edit-error').forEach(x=>x.onclick=()=>{activeError=x.dataset.error;$('#correctionProduct').textContent='ERP-P-1002 · 宽松字母印花卫衣';$('#correctionLocation').textContent='SKU信息 Sheet · 第8行';$('#correctionLabel').innerHTML='<span class="req">*</span> SKU 商家编码';$('#correctionField').textContent='spec_prices_v2[].code';$('#correctionControl').innerHTML='<input class="form-control" value="ERP-P-1002-WHITE-M"/>';correction.classList.remove('hidden')});
+  $('#saveCorrection').onclick=()=>{markFixed(activeError);correction.classList.add('hidden');alert('已保存，并重新校验该商品及其全部 SKU：校验通过')};
+  $('#downloadCorrection').onclick=()=>alert('已生成异常修正表：仅包含异常商品、关联 SKU、原始行标识和只读错误说明');
+  $('#uploadCorrection').onclick=()=>{if(!invalidCount){alert('当前没有待修正商品');return}if(confirm('模拟上传修正文件并复检 Excel 数据异常？')){let fixed=0;if(!$('#errorRowCode').dataset.fixed){markFixed('code');fixed=1}alert(fixed?'Excel 修正内容已合并并复检；类目默认方案缺失仍需在配置中处理':'当前剩余问题属于类目默认方案，不能通过 Excel 修正')}};
+  const policyData={
+    tshirt:{name:'短袖T恤',path:'女装 > T恤 > 短袖T恤',id:'200001',valid:true,props:[['适用季节','单选','夏季',['夏季','春秋','四季']],['袖长','单选','短袖',['短袖','五分袖']],['版型','单选','常规',['常规','宽松']],['厚薄','单选','常规',['常规','薄款']]]},
+    hoodie:{name:'套头卫衣',path:'女装 > 卫衣 > 套头卫衣',id:'200002',valid:true,props:[['衣门襟','单选','套头',['套头','拉链']],['厚薄','单选','常规',['常规','加绒']],['适用季节','单选','春秋',['春秋','冬季']],['版型','单选','宽松',['宽松','常规']]]},
+    shoes:{name:'运动鞋',path:'鞋靴 > 运动鞋 > 休闲运动鞋',id:'200003',valid:false,props:[['适用人群','单选','通用',['通用','成人']],['闭合方式','单选','系带',['系带','套脚']],['鞋帮高度','单选','低帮',['低帮','中帮']],['功能','单选','轻便',['轻便','透气']],['适用季节','单选','四季',['四季','夏季']],['鞋面材质','单选','',['','织物','合成革','网布']]]}
+  };
+  function openPolicyEditor(key){activePolicyKey=key;const data=policyData[key];$('#policyEditorTitle').textContent=`编辑默认属性方案 · ${data.name}`;$('#policyEditorSubtitle').textContent=`当前店铺：抖店旗舰店 · 方案仅影响后续新任务`;$('#policyCategoryPath').textContent=data.path;$('#policyCategoryId').textContent=`category_leaf_id：${data.id}`;$('#policyEditorStatus').innerHTML=data.valid?'<span class="badge ok">配置有效</span>':'<span class="badge error">待补充</span>';$('#policyConfiguredCount').textContent=`${data.props.filter(x=>x[2]).length} / ${data.props.length} 已配置`;$('#policyTruthConfirm').checked=data.valid;$('#policyEditorBody').innerHTML=data.props.map((p,i)=>{const options=p[3].map(v=>`<option value="${v}" ${v===p[2]?'selected':''}>${v||'请选择默认值'}</option>`).join('');return `<tr><td><div class="property-name">${p[0]}</div><div class="property-sub">请求映射：product_format_new[平台属性ID]</div></td><td>${p[1]}</td><td><select class="form-control policy-strategy"><option value="fixed">固定值</option><option value="unsupported">不支持默认</option></select></td><td><select class="form-control policy-value" data-index="${i}">${options}</select></td><td class="policy-value-status">${p[2]?'<span class="badge ok">已配置</span>':'<span class="badge error">待选择</span>'}</td></tr>`}).join('');$$('.policy-value').forEach(x=>x.onchange=()=>{x.closest('tr').querySelector('.policy-value-status').innerHTML=x.value?'<span class="badge ok">已配置</span>':'<span class="badge error">待选择</span>'});policyEditor.classList.remove('hidden')}
+  categoryPolicy.addEventListener('click',e=>{const btn=e.target.closest('.edit-policy');if(btn)openPolicyEditor(btn.dataset.category)});
+  $('#savePolicyEditor').onclick=()=>{const values=$$('.policy-value'),strategies=$$('.policy-strategy');if(strategies.some(x=>x.value==='unsupported')){alert('当前方案包含“不支持默认”的必填属性，因此不能标记为有效；该类目将暂停固定模板创建');return}if(values.some(x=>!x.value)){alert('仍有平台必填属性未选择默认值，请补齐后再验证');return}if(!$('#policyTruthConfirm').checked){alert('请确认默认值适用于当前店铺后续导入的此类目商品');return}const data=policyData[activePolicyKey];data.valid=true;data.props.forEach((p,i)=>p[2]=values[i].value);if(activePolicyKey==='shoes'){$('#shoePolicyProgress').textContent='6 / 6 已配置';$('#shoePolicyExample').textContent='鞋面材质=织物；闭合方式=系带…';$('#shoePolicyStatus').innerHTML='<span class="badge ok">有效</span>';$('#shoePolicyAction').innerHTML='<button class="btn ghost edit-policy" data-category="shoes">编辑</button>';$('#validPolicyCount').textContent='18';$('#invalidPolicyCount').textContent='0';if(categoryPolicySource==='validation')markFixed('category')}policyEditor.classList.add('hidden');if(categoryPolicySource==='validation'||categoryPolicySource==='detail')categoryPolicy.classList.add('hidden');alert('方案已保存并通过完整性、枚举、属性依赖和规则版本验证；不会创建测试商品')};
+  $('#taskEntry').onclick=openTaskList;
+  $('#createFromTaskList').onclick=()=>{task.classList.add('hidden');openWizard()};
+  $$('.view-task-detail').forEach(x=>x.onclick=()=>{task.classList.add('hidden');openDetail('task')});
+  $('#backTaskList').onclick=()=>{detail.classList.add('hidden');task.classList.remove('hidden')};
+  $('#backProductList').onclick=()=>{detail.classList.add('hidden');task.classList.add('hidden')};
+  if($('#fixConfigFromResult'))$('#fixConfigFromResult').onclick=openConfig;
+  $('#refreshTask').onclick=()=>alert('已刷新商品草稿创建结果');
+  $('#viewProduct').onclick=()=>alert('打开抖店草稿箱并按平台商品ID定位该草稿；具体深链能力待平台验证') ;
+  $$('[data-demo-download]').forEach(x=>x.onclick=()=>alert('已生成任务结果文件'));
+  updateButtons();
+</script>
+</body>
+</html>

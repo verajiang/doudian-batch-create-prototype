@@ -330,7 +330,7 @@
         <div class="after-sale-grid">
           <div class="form-item"><label>是否大件商品</label><select class="form-control" id="afterSaleLargeProduct"><option value="no">否</option><option value="yes">是</option></select></div>
           <div class="form-item"><label>三包服务</label><select class="form-control" id="afterSaleServiceType"><option value="none">不配置三包服务</option><option value="repair">寄修</option><option value="extended">延保</option></select></div>
-          <div class="form-item"><label>保障期限</label><select class="form-control" id="afterSaleDuration"><option value="">请选择</option><option value="90">90天</option><option value="180">180天</option><option value="365">365天</option></select></div>
+          <div class="form-item"><label>保障期限（天）</label><input class="form-control" id="afterSaleDuration" type="number" min="1" value="180" placeholder="请输入保障天数"/></div>
         </div>
         <div class="hint" style="margin-top:10px">售后设置会自动应用到该类目新导入的商品；不配置三包服务时，无需选择保障期限。</div>
       </div>
